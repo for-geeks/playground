@@ -1,15 +1,19 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from modules.planning.proto.planning_pb2 import Trajectory
-import numpy as np
+
 import signal
-import math
 import time
+import sys
+
+import numpy as np
+
+from cyber_py3 import cyber
+
+from modules.planning.proto.planning_pb2 import Trajectory
 from modules.control.proto.chassis_pb2 import Chassis
 from modules.planning.proto.planning_pb2 import Point
 from modules.control.proto.control_pb2 import Control_Command
 from modules.control.proto.control_pb2 import Control_Reference
-from cyber_py import cyber
-import sys
 
 sys.path.append("../")
 
@@ -77,7 +81,7 @@ class Control(object):
                                            self.trajectory.point[0].y * self.trajectory.point[0].y) * flag
 
     def lateral_controller(self, trajectory, lateral_error):
-        # TODO  you should calculate steerangle here
+        # you should calculate steerangle here
         if (len(trajectory.point)):
             preview_x = trajectory.point[len(trajectory.point) / 2].x
             preview_y = trajectory.point[len(trajectory.point) / 2].y
@@ -97,7 +101,7 @@ class Control(object):
         pass
 
     def longitude_controller(self, target_speed, speed_now):
-        # TODO  you should calculate throttle here
+        #  you should calculate throttle here
         self.sum_error_longi += 0.05 * (0.5 - speed_now)
         # + 6 + 8.0 * (target_speed - speed_now) + 5.0 * self.sum_error_longi
         self.cmd.throttle = 0.5 * 30 + (0.5 - speed_now) * 8 + 0.5 * sum_error_longi
@@ -107,6 +111,6 @@ class Control(object):
 if __name__ == '__main__':
     cyber.init()
 
-    # TODO update node to your name
+    # update node to your name
     exercise_node = cyber.Node("control_node")
     exercise = Control(exercise_node)
