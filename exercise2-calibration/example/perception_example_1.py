@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import sys
+import time
+
 import numpy as np
 import cv2
-import time
+
+from cyber_py3 import cyber
 from modules.sensors.proto.sensor_image_pb2 import Image
-from cyber_py import cyber
-import sys
 
 sys.path.append("../")
 
@@ -32,23 +33,23 @@ class Exercise(object):
         self.node = node
         self.msg = Image()
 
-        # TODO create reader
+        # create reader
         self.node.create_reader(
             "/realsense/color_image/compressed", Image, self.callback)
-        # TODO create writer
+        # create writer
         self.writer = self.node.create_writer(
             "/perception/vertical_view", Image)
 
     def callback(self, data):
-        # TODO
+        # data frame 
         print(data.frame_no)
-        # TODO reshape
+        # APT to image reshape
         self.reshape(data)
-        # TODO publish, write to channel
+        # publish, write to channel
         self.write_to_channel()
 
     def write_to_channel(self):
-        # TODO
+        # write message to channel
         self.writer.write(self.msg)
 
     def reshape(self, data):
@@ -70,7 +71,7 @@ class Exercise(object):
 if __name__ == '__main__':
     cyber.init()
 
-    # TODO update node to your name
+    # update node to your name
     exercise_node = cyber.Node("your_name")
     exercise = Exercise(exercise_node)
 

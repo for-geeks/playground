@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+import time
+
 import numpy as np
 import cv2
-import time
+
+from cyber_py3 import cyber
 from modules.sensors.proto.sensor_image_pb2 import Image
-from cyber_py import cyber
-import sys
 
 sys.path.append("../")
 
