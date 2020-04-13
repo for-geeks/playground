@@ -40,7 +40,6 @@ class Control(object):
         signal.signal(signal.SIGTERM, self.sigint_handler)
         self.is_sigint_up = False
         while True:
-            # try:
             time.sleep(0.05)
             self.lateral_controller(self.trajectory, self.lateral_error)
             self.longitude_controller(self.target_speed, self.speed)
@@ -49,21 +48,17 @@ class Control(object):
                 print("Exit")
                 self.is_sigint_up = False
                 return
-            # except Exception:
-
-         #   break
 
     def chassiscallback(self, data):
         self.speed = data.speed
 
     def sigint_handler(self, signum, frame):
-            #global is_sigint_up
         self.is_sigint_up = True
         print("catched interrupt signal!")
 
     def speedrefcallback(self, data):
         self.target_speed = data.vehicle_speed
-        print self.target_speed
+        print(self.target_speed)
 
     def trajectorycallback(self, data):
         self.trajectory = data
@@ -81,7 +76,7 @@ class Control(object):
         if (len(trajectory.point)):
             preview_x = trajectory.point[len(trajectory.point) / 2].x
             preview_y = trajectory.point[len(trajectory.point) / 2].y
-            print preview_x, preview_y
+            print(preview_x, preview_y)
             self.cmd.steer_angle = 57 * math.atan2(2 * preview_y * 0.313,
                                                    (preview_x * preview_x + preview_y * preview_y))
             if (abs(self.cmd.steer_angle) < 0.1):
@@ -93,14 +88,14 @@ class Control(object):
         else:
             self.cmd.steer_angle = 0
 
-        print self.cmd.steer_angle
+        print(self.cmd.steer_angle)
         pass
 
     def longitude_controller(self, target_speed, speed_now):
         # TODO  you should calculate throttle here
         self.sum_error_longi += 0.05 * (0.5 - speed_now)
         # + 6 + 8.0 * (target_speed - speed_now) + 5.0 * self.sum_error_longi
-        self.cmd.throttle = 0.5 * 30 + (0.5 - speed_now) * 8 + 0.5 * sum_error_longi
+        self.cmd.throttle = 0.5 * 30 + (0.5 - speed_now) * 8 + 0.5 * self.sum_error_longi
         pass
 
 
