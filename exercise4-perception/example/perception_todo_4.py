@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 import os
 import sys
-
+import time
+import codecs
 import cv2
 import numpy as np
+import paddle.fluid as fluid
 
 from cyber_py3 import cyber
 
 from modules.sensors.proto.sensor_image_pb2 import Image
 from modules.perception.proto.perception_label_box_pb2 import LBox2DList
 from modules.perception.proto.perception_label_box_pb2 import LBox2D
-
-import codecs
-import time
-import paddle.fluid as fluid
 
 sys.path.append("../")
 

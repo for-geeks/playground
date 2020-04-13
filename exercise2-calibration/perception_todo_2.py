@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
+import sys
+
+from cyber_py3 import cyber
+
 from modules.planning.proto.planning_pb2 import Trajectory
 from modules.planning.proto.planning_pb2 import Point
-from cyber_py import cyber
-import sys
 
 sys.path.append("../")
 

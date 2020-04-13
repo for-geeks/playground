@@ -10,8 +10,8 @@ import sys
 
 import termios, fcntl, os
 
-from cyber_py import cyber
-from cyber_py import cyber_time
+from cyber_py3 import cyber
+from cyber_py3 import cyber_time
 from modules.control.proto.control_pb2 import Control_Command
 
 sys.path.append("../")

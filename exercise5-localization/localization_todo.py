@@ -3,10 +3,11 @@
 import sys
 import math
 import time
-import numpy as np
 import signal
 
-from cyber_py import cyber
+import numpy as np
+
+from cyber_py3 import cyber
 from modules.control.proto.chassis_pb2 import Chassis
 from modules.localization.proto.localization_pb2 import localization
 from modules.localization.proto.localization_pb2 import pos

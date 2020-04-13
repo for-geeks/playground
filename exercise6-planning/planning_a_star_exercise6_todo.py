@@ -4,15 +4,16 @@ import os
 import sys
 import time
 import signal
-from cyber_py import cyber
-from modules.planning.proto.planning_pb2 import Trajectory
-from modules.planning.proto.planning_pb2 import Point
-
-from modules.localization.proto.localization_pb2 import localization
-from modules.localization.proto.localization_pb2 import pos
 
 import cv2
 import numpy as np
+
+from cyber_py3 import cyber
+
+from modules.planning.proto.planning_pb2 import Trajectory
+from modules.planning.proto.planning_pb2 import Point
+from modules.localization.proto.localization_pb2 import localization
+from modules.localization.proto.localization_pb2 import pos
 
 point_xy = Point()
 

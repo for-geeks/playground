@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import sys
+
+from cyber_py3 import cyber
+
 from modules.planning.proto.planning_pb2 import Trajectory
 from modules.planning.proto.planning_pb2 import Point
-from cyber_py import cyber
-import sys
 
 sys.path.append("../")
 
@@ -21,29 +22,25 @@ class Exercise(object):
         self.node = node
         self.planning_path = Trajectory()
 
-        # TODO create reader
+        # create reader
         self.node.create_reader("/perception/get_point",
                                 Trajectory, self.callback)
-        # TODO create writer
+        # create writer
         self.writer = self.node.create_writer(
             "/perception/translation_point", Trajectory)
 
     def callback(self, data):
-        # TODO
-        # print(data.frame_no)
-        # TODO reshape
+        # reshape
         self.reshape(data)
-        # TODO publish, write to channel
+        # publish, write to channel
         if not cyber.is_shutdown():
             self.write_to_channel()
 
     def write_to_channel(self):
-        # TODO
+        # API to write message to channel
         self.writer.write(self.planning_path)
 
     def reshape(self, data):
-
-        # print(data)
 
         point_array = data.point
         self.planning_path = Trajectory()
@@ -60,7 +57,7 @@ class Exercise(object):
 if __name__ == '__main__':
     cyber.init()
 
-    # TODO update node to your name
+    # update node to your name
     exercise_node = cyber.Node("read_point")
     exercise = Exercise(exercise_node)
 
