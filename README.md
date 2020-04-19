@@ -3,7 +3,7 @@ Geek playgroud codes based on Apollo Cyber Framework.
 
 ## Setup Env
 
-Clone and Build Geek lite firstly.
+Clone and Build Geek Car firstly.
 
 ```bash
 
