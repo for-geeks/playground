@@ -1,5 +1,9 @@
 # Playgroud
-Geek playgroud codes based on Apollo Cyber Framework.
+This is a submodule for Geek car, You can write you owner playgroud codes, and test in the Geek car.
+
+## Clone
+
+Please clone this reposity firstly, and then update the exercises codes, then deploy AND test on the Geek Car.
 
 ## Setup Env
 
