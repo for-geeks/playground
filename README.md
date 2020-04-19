@@ -7,7 +7,7 @@ Clone and Build Geek lite firstly.
 
 ```bash
 
-git clone https://github.com/for-geeks/geek-car
+git clone git@github.com:for-geeks/geek-car.git
 git submodule init 
 git submodule update 
 
