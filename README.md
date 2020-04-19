@@ -25,7 +25,7 @@ import standard_packages
 
 import third_party_packages
 
-import geek_packages
+import geek_car_packages
 
 import exercises_packages
 ```
