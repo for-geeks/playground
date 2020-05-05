@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #coding: utf-8
 
 import sys
@@ -6,11 +5,8 @@ import os
 import math
 import signal
 import time
-
 import numpy as np
-
-from cyber_py3 import cyber
-
+from cyber_py import cyber
 from modules.planning.proto.planning_pb2 import PlanningInfo
 from modules.planning.proto.planning_pb2 import Trajectory
 from modules.planning.proto.planning_pb2 import Point

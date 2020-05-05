@@ -119,6 +119,7 @@ def calc_to_goal_cost(trajectory, goal, config):
     # calc to goal cost. It is 2D norm.
 
     ##TODO
+
     dx = goal[0] - trajectory[-1, 0]
     dy = goal[1] - trajectory[-1, 1]
     goal_dis = math.sqrt(dx ** 2 + dy ** 2)
@@ -228,8 +229,8 @@ def calc_final_input(x, u, vr, config, goal, ob):
                 best_trajectory = trajectory
 
     #限制小车的最小速度
-    if min_u[0] < 0.3:
-        min_u[0] = 0.3
+    if min_u[0] < 0.6:
+        min_u[0] = 0.6
 
     yawrate_old = min_u[1]
 
@@ -375,17 +376,17 @@ class planning(object):
 
         yaw = math.pi - pos.yaw
 
-        x = f_point[0] * math.cos(yaw) + f_point[1] * math.sin(yaw)
-        y = f_point[1] * math.cos(yaw) - f_point[0] * math.sin(yaw)
+        x_f = f_point[0] * math.cos(yaw) + f_point[1] * math.sin(yaw)
+        y_f = f_point[1] * math.cos(yaw) - f_point[0] * math.sin(yaw)
 
-        print("trans-goal:", [x, y])
+        print("trans-goal:", [x_f, y_f])
 
         print(" planning start!")
 
         # initial state [x(m), y(m), yaw(rad), v(m/s), omega(rad/s)]
         x = np.array([0.0, 0.0, 0, 0.3, 0.0])
         # goal position [x(m), y(m)]
-        goal = np.array([x, y])
+        goal = np.array([x_f, y_f])
 
         ob = np.matrix(self.obstacleList)
 
@@ -401,6 +402,8 @@ class planning(object):
 
         #接近终点
         car_r = ((((start_x - self.pathList[0][0])**2 + (start_y - self.pathList[0][1])**2)**0.5) / scale)
+
+        print(car_r)
 
         if car_r <= 0.3:
             u[0] = 0

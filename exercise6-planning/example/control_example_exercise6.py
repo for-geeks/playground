@@ -26,14 +26,15 @@ class Control(object):
         self.cmd.throttle = 0
         self.trajectory = Trajectory()
         self.node.create_reader("/chassis", Chassis, self.chassiscallback)
-        self.node.create_reader("/control_reference",
+        self.node.create_reader("/control/reference",
                                 Control_Reference, self.speedrefcallback)
 # /planning/trajectory\
 # /planning/control_trajectory
-        self.node.create_reader("/planning/trajectory",
+        self.node.create_reader("/planning/dwa_trajectory",
                                 Trajectory, self.trajectorycallback)
         self.writer = self.node.create_writer("/control", Control_Command)
 
+        self.sum_error_longi = 0
         signal.signal(signal.SIGINT, self.sigint_handler)
         signal.signal(signal.SIGHUP, self.sigint_handler)
         signal.signal(signal.SIGTERM, self.sigint_handler)
@@ -62,6 +63,7 @@ class Control(object):
 
     def speedrefcallback(self, data):
         self.target_speed = data.vehicle_speed
+        print ("ref speed is : ")
         print self.target_speed
 
     def trajectorycallback(self, data):
@@ -81,7 +83,7 @@ class Control(object):
             preview_x = -1*trajectory.point[len(trajectory.point) / 2].x
             preview_y = -1 * trajectory.point[len(trajectory.point) / 2].y
             print preview_x, preview_y
-            self.cmd.steer_angle = -57 * math.atan2(2 * preview_y * 0.313,
+            self.cmd.steer_angle = 57 * math.atan2(2 * preview_y * 0.313,
                                                     (preview_x * preview_x + preview_y * preview_y))
             if (abs(self.cmd.steer_angle) < 0.1):
                 self.cmd.steer_angle = 0
@@ -96,9 +98,9 @@ class Control(object):
         pass
 
     def longitude_controller(self, target_speed, speed_now):
-        self.sum_error_longi += 0.05 * (0.5 - speed_now)
         # + 6 + 8.0 * (target_speed - speed_now) + 5.0 * self.sum_error_longi
-        self.cmd.throttle = 0.5 * 30 + (0.5 - speed_now) * 8 + 0.5 * sum_error_longi
+        self.sum_error_longi += 0.05 * (target_speed - speed_now)
+        self.cmd.throttle = target_speed * 30 + (target_speed - speed_now) * 8 + 0.5 * self.sum_error_longi
         pass
 
 
