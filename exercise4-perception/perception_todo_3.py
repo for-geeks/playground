@@ -40,10 +40,8 @@ def color_mask(hsv, low, high):
 def apply_yellow_white_mask(img):
     gradx = abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(20, 255))
     # TODO h
-    image_HSV = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    yellow_hsv_low = np.array([0,  100,  100])
-    yellow_hsv_high = np.array([149, 255, 255])
-    mask_yellow = color_mask(image_HSV, yellow_hsv_low, yellow_hsv_high)
+
+    # TODO h END
 
     mask_yellow[(mask_yellow != 0)] = 1
     combined_lsx = np.zeros_like(gradx)
@@ -104,7 +102,8 @@ def get_win_point(leftx, lefty, shape):
 
 def abs_sobel_thresh(new_image, sobel_kernel=3, orient='x', thresh=(0, 255)):
     # TODO f
-    gray = cv2.cvtColor(new_image, cv2.COLOR_RGB2GRAY)
+
+    # TODO f END
 
     # INFO g
     if orient == 'x':
@@ -181,11 +180,10 @@ class Exercise(object):
             "/perception/road_mean_point", Trajectory)
 
     def callback(self, data):
-        # TODO
         # print(data.frame_no)
-        # TODO reshape
+        #  reshape
         self.getmeanpoint(data)
-        # TODO publish, write to channel
+        #  publish, write to channel
         if not cyber.is_shutdown():
             self.write_to_channel()
 
@@ -196,16 +194,16 @@ class Exercise(object):
     def getmeanpoint(self, data):
 
         # TODO e
-        new_image = np.frombuffer(data.data, dtype=np.uint8)
-        new_image = cv2.imdecode(new_image, cv2.IMREAD_COLOR)
+
+        # TODO e END
 
         wrap_img = perspective_transform(new_image, M, (580, 560))
 
         yellow_line = apply_yellow_white_mask(wrap_img)
 
         # TODO I
-        line_list, mean_x, mean_y = find_line_fit(
-            yellow_line, midpoint=car_mid_point, nwindows=10, margin=100)
+
+        # TODO I END
 
         self.planning_path = Trajectory()
         #print("point size:",str(len(mean_y)))
