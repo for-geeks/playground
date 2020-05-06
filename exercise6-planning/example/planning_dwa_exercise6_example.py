@@ -6,7 +6,7 @@ import math
 import signal
 import time
 import numpy as np
-from cyber_py import cyber
+from cyber_py3 import cyber
 from modules.planning.proto.planning_pb2 import PlanningInfo
 from modules.planning.proto.planning_pb2 import Trajectory
 from modules.planning.proto.planning_pb2 import Point
@@ -24,11 +24,11 @@ point_xy = Point()
 yawrate_old = 0
 scale = 144.9
 
+
 class Config(object):
     """
     用来仿真的参数，
     """
-
     def __init__(self):
         # car parameter
         self.max_speed = 0.5  # [m/s]  # 最大速度
@@ -40,12 +40,13 @@ class Config(object):
         self.yawrate_reso = 1.2 * math.pi / 180.0  # [rad/s]，角速度分辨率
         self.dt = 0.1  # [s]  # 采样周期
         self.predict_time = 3  # [s]  # 向前预估三秒
-        self.to_goal_cost_gain = 6 # 目标代价增益
+        self.to_goal_cost_gain = 6  # 目标代价增益
         self.speed_cost_gain = 10  # 速度代价增益
-        self.obstacle_cost_gain = 1 # 障碍物代价增益
-        self.yawrate_cost_gain = 10 # 角速度代价增益
+        self.obstacle_cost_gain = 1  # 障碍物代价增益
+        self.yawrate_cost_gain = 10  # 角速度代价增益
         self.obstacle_radius = 0.2  # [m]  # 机器人半径
         #self.car_radius = 0.1
+
 
 def motion(x, u, dt):
     """
@@ -72,18 +73,26 @@ def calc_dynamic_window(x, config):
     """
 
     # 车辆能够达到的最大最小速度
-    vs = [config.min_speed, config.max_speed,
-          -config.max_yawrate, config.max_yawrate]
+    vs = [
+        config.min_speed, config.max_speed, -config.max_yawrate,
+        config.max_yawrate
+    ]
 
     # 一个采样周期能够变化的最大最小速度
-    vd = [x[3] - config.max_accel * config.dt,
-          x[3] + config.max_accel * config.dt,
-          x[4] - config.max_dyawrate * config.dt,
-          x[4] + config.max_dyawrate * config.dt]
+    vd = [
+        x[3] - config.max_accel * config.dt,
+        x[3] + config.max_accel * config.dt,
+        x[4] - config.max_dyawrate * config.dt,
+        x[4] + config.max_dyawrate * config.dt
+    ]
 
     # 求出两个速度集合的交集
-    vr = [max(vs[0], vd[0]), min(vs[1], vd[1]),
-          max(vs[2], vd[2]), min(vs[3], vd[3])]
+    vr = [
+        max(vs[0], vd[0]),
+        min(vs[1], vd[1]),
+        max(vs[2], vd[2]),
+        min(vs[3], vd[3])
+    ]
 
     return vr
 
@@ -122,11 +131,12 @@ def calc_to_goal_cost(trajectory, goal, config):
 
     dx = goal[0] - trajectory[-1, 0]
     dy = goal[1] - trajectory[-1, 1]
-    goal_dis = math.sqrt(dx ** 2 + dy ** 2)
+    goal_dis = math.sqrt(dx**2 + dy**2)
     cost = config.to_goal_cost_gain * goal_dis
 
     return cost
     ##TODO
+
 
 def calc_obstacle_cost(traj, ob, config):
     """
@@ -145,7 +155,7 @@ def calc_obstacle_cost(traj, ob, config):
 
     skip_n = 2  # 省时
 
-    minr = float("inf")# 距离初始化为无穷大
+    minr = float("inf")  # 距离初始化为无穷大
 
     for ii in range(0, len(traj[:, 1]), skip_n):
         for i in range(len(ob[:, 0])):
@@ -156,7 +166,7 @@ def calc_obstacle_cost(traj, ob, config):
             dx = traj[ii, 0] - ox
             dy = traj[ii, 1] - oy
 
-            r = math.sqrt(dx ** 2 + dy ** 2)
+            r = math.sqrt(dx**2 + dy**2)
             if r <= obr:
                 return float("Inf")  # collision
 
@@ -166,6 +176,7 @@ def calc_obstacle_cost(traj, ob, config):
     return 1.0 / minr  # 越小越好
 
     ##TODO
+
 
 def calc_speed_cost(traj, config):
     """
@@ -181,7 +192,6 @@ def calc_speed_cost(traj, config):
     return speed_cost
 
     ##TODO
-
 
 
 def calc_final_input(x, u, vr, config, goal, ob):
@@ -210,10 +220,12 @@ def calc_final_input(x, u, vr, config, goal, ob):
             trajectory = calc_trajectory(x_init, v, w, config)
 
             # calc cost
-            to_goal_cost = config.to_goal_cost_gain * calc_to_goal_cost(trajectory, goal, config)
-            speed_cost = config.speed_cost_gain * calc_speed_cost(trajectory, config)
-            ob_cost = config.obstacle_cost_gain * calc_obstacle_cost(trajectory, ob, config)
-
+            to_goal_cost = config.to_goal_cost_gain * calc_to_goal_cost(
+                trajectory, goal, config)
+            speed_cost = config.speed_cost_gain * calc_speed_cost(
+                trajectory, config)
+            ob_cost = config.obstacle_cost_gain * calc_obstacle_cost(
+                trajectory, ob, config)
 
             #用于稳定规划路径，减少跳动
             yawrate_cost = config.yawrate_cost_gain * abs(w - yawrate_old)
@@ -256,7 +268,6 @@ def dwa_control(x, u, config, goal, ob):
 
 
 class planning(object):
-
     def __init__(self, node):
         self.node = node
         self.goal_x = 0
@@ -286,11 +297,15 @@ class planning(object):
 
         print("update global trajectory:finish!")
 
-        self.node.create_reader("/planning/global_trajectory", Trajectory, self.globalcallback)
-        self.node.create_reader("/perception/obstacles", PerceptionObstacles, self.obstaclecallback)
+        self.node.create_reader("/planning/global_trajectory", Trajectory,
+                                self.globalcallback)
+        self.node.create_reader("/perception/obstacles", PerceptionObstacles,
+                                self.obstaclecallback)
         self.node.create_reader("/geek/uwb/localization", pos, self.callback)
-        self.writer = self.node.create_writer("/planning/dwa_trajectory", Trajectory)
-        self.vwriter = self.node.create_writer("/control/reference", Control_Reference)
+        self.writer = self.node.create_writer("/planning/dwa_trajectory",
+                                              Trajectory)
+        self.vwriter = self.node.create_writer("/control/reference",
+                                               Control_Reference)
 
         signal.signal(signal.SIGINT, self.sigint_handler)
         signal.signal(signal.SIGHUP, self.sigint_handler)
@@ -307,7 +322,6 @@ class planning(object):
         self.is_sigint_up = True
         print("catch interrupt signal!")
 
-
     def globalcallback(self, global_trajectory):
 
         pathList = []
@@ -323,7 +337,6 @@ class planning(object):
 
     def obstaclecallback(self, data):
 
-
         obstacle_info = []
 
         for obstacle in data.perception_obstacle:
@@ -334,12 +347,11 @@ class planning(object):
             max_y = -obstacle.bbox2d.xmax
 
             #obstacle_r = (((max_x - min_x)/2)**2 + ((max_y - min_y)/2)**2)**0.5
-            obstacle_x = (max_x - min_x)/2 + min_x
-            obstacle_y = (max_y - min_y)/2 + min_y
+            obstacle_x = (max_x - min_x) / 2 + min_x
+            obstacle_y = (max_y - min_y) / 2 + min_y
             obstacle_r = 0.2
 
             obstacle_info.append([obstacle_x, obstacle_y, obstacle_r])
-
 
         self.obstacleList = obstacle_info
 
@@ -356,7 +368,7 @@ class planning(object):
         minr = float("inf")
 
         for i, point in enumerate(self.pathList):
-            r = math.sqrt((point[0] - start_x) ** 2 + (point[1] - start_y) ** 2)
+            r = math.sqrt((point[0] - start_x)**2 + (point[1] - start_y)**2)
             if minr >= r:
                 minr = r
                 num_point = i
@@ -372,7 +384,8 @@ class planning(object):
         print("goal:", self.goal)
 
         #将预瞄点坐标从地图坐标系转换到车身坐标系
-        f_point = [(f_point[0] - start_x) / scale, -((f_point[1] - start_y) / scale)]
+        f_point = [(f_point[0] - start_x) / scale,
+                   -((f_point[1] - start_y) / scale)]
 
         yaw = math.pi - pos.yaw
 
@@ -401,7 +414,8 @@ class planning(object):
         x = motion(x, u, config.dt)
 
         #接近终点
-        car_r = ((((start_x - self.pathList[0][0])**2 + (start_y - self.pathList[0][1])**2)**0.5) / scale)
+        car_r = ((((start_x - self.pathList[0][0])**2 +
+                   (start_y - self.pathList[0][1])**2)**0.5) / scale)
 
         print(car_r)
 
