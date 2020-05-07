@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-from modules.planning.proto.planning_pb2 import Trajectory
-import numpy as np
-import signal
+import sys
 import math
 import time
+import signal
+
+import numpy as np
+
+from cyber_py3 import cyber
+
 from modules.control.proto.chassis_pb2 import Chassis
 from modules.planning.proto.planning_pb2 import Point
 from modules.control.proto.control_pb2 import Control_Command
 from modules.control.proto.control_pb2 import Control_Reference
-from cyber_py import cyber
-import sys
+from modules.planning.proto.planning_pb2 import Trajectory
+
 
 sys.path.append("../")
 
@@ -28,8 +32,6 @@ class Control(object):
         self.node.create_reader("/chassis", Chassis, self.chassiscallback)
         self.node.create_reader("/control/reference",
                                 Control_Reference, self.speedrefcallback)
-# /planning/trajectory\
-# /planning/control_trajectory
         self.node.create_reader("/planning/dwa_trajectory",
                                 Trajectory, self.trajectorycallback)
         self.writer = self.node.create_writer("/control", Control_Command)
@@ -46,7 +48,7 @@ class Control(object):
             self.longitude_controller(self.target_speed, self.speed)
             self.writer.write(self.cmd)
             if self.is_sigint_up:
-                print "Exit"
+                print("Exit")
                 self.is_sigint_up = False
                 return
             # except Exception:
@@ -59,12 +61,12 @@ class Control(object):
     def sigint_handler(self, signum, frame):
             #global is_sigint_up
         self.is_sigint_up = True
-        print 'catched interrupt signal!'
+        print("catched interrupt signal!")
 
     def speedrefcallback(self, data):
         self.target_speed = data.vehicle_speed
         print ("ref speed is : ")
-        print self.target_speed
+        print(self.target_speed)
 
     def trajectorycallback(self, data):
         self.trajectory = data
@@ -82,7 +84,7 @@ class Control(object):
         if (len(trajectory.point)):
             preview_x = -1*trajectory.point[len(trajectory.point) / 2].x
             preview_y = -1 * trajectory.point[len(trajectory.point) / 2].y
-            print preview_x, preview_y
+            print(preview_x, preview_y)
             self.cmd.steer_angle = 57 * math.atan2(2 * preview_y * 0.313,
                                                     (preview_x * preview_x + preview_y * preview_y))
             if (abs(self.cmd.steer_angle) < 0.1):
@@ -94,7 +96,7 @@ class Control(object):
         else:
             self.cmd.steer_angle = 0
 
-        print self.cmd.steer_angle
+        print(self.cmd.steer_angle)
         pass
 
     def longitude_controller(self, target_speed, speed_now):
