@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-#this is changed
 import math
 import time
 import signal
@@ -31,7 +30,7 @@ class Control(object):
         self.cmd.throttle = 0
         self.trajectory = Trajectory()
         self.node.create_reader("/chassis", Chassis, self.chassiscallback)
-        self.node.create_reader("/control_reference",
+        self.node.create_reader("/control/reference",
                                 Control_Reference, self.speedrefcallback)
         self.node.create_reader("/planning/dwa_trajectory",
                                 Trajectory, self.trajectorycallback)
@@ -83,8 +82,8 @@ class Control(object):
     def lateral_controller(self, trajectory, lateral_error):
         # TODO  you should calculate steerangle here
         if (len(trajectory.point)):
-            preview_x = -1*trajectory.point[(int)(len(trajectory.point) / 2)].x
-            preview_y = -1 * trajectory.point[(int)(len(trajectory.point) / 2)].y
+            preview_x = -1*trajectory.point[len(trajectory.point) / 2].x
+            preview_y = -1 * trajectory.point[len(trajectory.point) / 2].y
             print(preview_x, preview_y)
             self.cmd.steer_angle = 57 * math.atan2(2 * preview_y * 0.313,
                                                     (preview_x * preview_x + preview_y * preview_y))
@@ -101,10 +100,9 @@ class Control(object):
         pass
 
     def longitude_controller(self, target_speed, speed_now):
-        self.sum_error_longi += 0.05 * (target_speed - speed_now)
         # + 6 + 8.0 * (target_speed - speed_now) + 5.0 * self.sum_error_longi
-        self.cmd.throttle = 10 + (target_speed- speed_now) * 16 + 10 * self.sum_error_longi
-        self.cmd.throttle = 10 + target_speed * 6 + (target_speed- speed_now) * 5 + 10 * self.sum_error_longi
+        self.sum_error_longi += 0.05 * (target_speed - speed_now)
+        self.cmd.throttle = target_speed * 30 + (target_speed - speed_now) * 8 + 0.5 * self.sum_error_longi
         pass
 
 
