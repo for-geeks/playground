@@ -16,7 +16,7 @@ import numpy as np
 
 point_xy = Point()
 
-maps = cv2.imread("maps1.jpeg", cv2.IMREAD_GRAYSCALE)  # 读取地图图像，灰度读入。灰度为0表示障碍物
+maps = cv2.imread("maps.jpg", cv2.IMREAD_GRAYSCALE)  # 读取地图图像，灰度读入。灰度为0表示障碍物
 maps_size = np.array(maps)  # 获取图像行和列大小
 hight = maps_size.shape[0]  # 行数->y
 width = maps_size.shape[1]  # 列数->x
