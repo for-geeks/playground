@@ -18,9 +18,12 @@ from modules.localization.proto.localization_pb2 import pos
 
 point_xy = Point()
 
-maps = cv2.imread("maps1.jpeg", cv2.IMREAD_GRAYSCALE)  # 读取地图图像，灰度读入。灰度为255表示障碍物
+maps = cv2.imread("maps.jpg", cv2.IMREAD_GRAYSCALE)  # 读取地图图像，灰度读入。灰度为0表示障碍物
+maps_size = np.array(maps)  # 获取图像行和列大小
+hight = maps_size.shape[0]  # 行数->y
+width = maps_size.shape[1]  # 列数->x
+scale = 144.9
 
-scale = 144.9 #比例尺
 
 class planning(object):
     def __init__(self, node):
@@ -29,8 +32,6 @@ class planning(object):
         self.start_y = 0
         self.goal_x = 0
         self.goal_y = 0
-        self.global_path = Trajectory()
-
         self.node.create_reader("/geek/uwb/localization", pos,
                                 self.localizationcallback)
         self.node.create_reader("/planning/mission_point", Point,
@@ -42,11 +43,8 @@ class planning(object):
         signal.signal(signal.SIGHUP, self.sigint_handler)
         signal.signal(signal.SIGTERM, self.sigint_handler)
         self.is_sigint_up = False
-
         while True:
             time.sleep(0.05)
-            if not cyber.is_shutdown() and self.global_path:
-                self.writer.write(self.global_path)
             if self.is_sigint_up:
                 print("Exit!")
                 self.is_sigint_up = False
@@ -66,9 +64,8 @@ class planning(object):
 
         pathList = self.start(self.start_x, self.start_y, self.goal_x,
                               self.goal_y)
-       
-        self.planning_path = Trajectory()
 
+        self.planning_path = Trajectory()
         if not pathList:
             print("Failed to find a path")
         else:
@@ -78,20 +75,21 @@ class planning(object):
 
                 self.planning_path.point.append(point_xy)
 
-        self.global_path = self.planning_path
+        if not cyber.is_shutdown() and self.planning_path:
+            self.writer.write(self.planning_path)
 
     def start(self, start_x, start_y, goal_x, goal_y):
 
-        #if not os.path.exists('global.txt'):
-        #    f = open("global.txt", 'w')
-        #    f.close()
+        if not os.path.exists('global.txt'):
+            f = open("global.txt", 'w')
+            f.close()
 
         plan_path = []
         maps_size = np.array(maps)  # 获取图像行和列大小
         height = maps_size.shape[0]  # 行数->y
         width = maps_size.shape[1]  # 列数->x
 
-        start = {
+        star = {
             'position': (start_x, start_y),
             'cost': 700,
             'parent': (start_x, start_y)
@@ -114,7 +112,7 @@ class planning(object):
             return []
 
         openlist = []  # open列表，存储可能路径
-        closelist = [start]  # close列表，已走过路径
+        closelist = [star]  # close列表，已走过路径
         step_size = 10  # 搜索步长
         step_size_scan = 1
         safe_size = step_size
@@ -148,7 +146,6 @@ class planning(object):
                                                             s_point[0]] <= 140:
                 lane_point = [s_point[0], s_point[1]]
 
-            #寻找离当前点最近的道路中心线上的点
             while lane_point == []:
                 for i in range(len(add_scan)):
                     x = current_point[0] + n * add_scan[i][0]  # 检索超出图像大小范围则跳过
@@ -175,13 +172,11 @@ class planning(object):
                 if y < 0 or y >= height:  # 检索超出图像大小范围则跳过
                     continue
 
-                #完成代价g(n)和h(n)的构建
-                #TODO
-                G = abs(x - start['position'][0]) + abs(y - start['position'][1])  # 计算代价G
-                H = abs(x - end['position'][0]) + abs(y - end['position'][1])  # 计算代价H
-		#TODO
+                G = abs(x - star['position'][0]) + abs(
+                    y - star['position'][1])  # 计算代价
+                H = abs(x - end['position'][0]) + abs(
+                    y - end['position'][1])  # 计算代价
 
-		#代价I,约束规划路线贴近道路中心线
                 I = abs(x - lane_point[0]) + abs(y - lane_point[1])
 
                 if (maps[y, x] >= 120 and maps[y, x] <= 140) or (
@@ -222,8 +217,9 @@ class planning(object):
                     break
             closelist.append(t_point)  # 在close列表中加入t点
 
+            # cv2.circle(informap,t_point['位置'],1,(200,0,0),-1)
             if t_point['position'] == end['position']:  # 找到终点！！
-                print("Found the goal.")
+                print("找到终点")
                 break
 
             if len(closelist) > ((1300 * 80) / step_size):
@@ -237,12 +233,13 @@ class planning(object):
         k = 0
 
         while 1:
+            print("3")
             for i in closelist:
                 if i['position'] == point['parent']:  # 找到父节点
                     point = i
                     road.append(point)
-            if point == start:
-                print("global planning finished.")
+            if point == star:
+                print("路径搜索完成")
                 break
 
         for i in road:  # 画出规划路径
@@ -252,9 +249,9 @@ class planning(object):
 
         print('totally cost', time_end - time_start)
 
-        #f = open('global.txt', 'w')
-        #f.write(str(plan_path))
-        #f.close()
+        f = open('global.txt', 'w')
+        f.write(str(plan_path))
+        f.close()
 
         return plan_path
 
