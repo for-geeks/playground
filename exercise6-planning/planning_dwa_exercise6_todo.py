@@ -35,7 +35,7 @@ class Config(object):
         self.min_speed = 0  # [m/s]  # 最小速度，设置为不倒车
         self.max_yawrate = 90.0 * math.pi / 180.0  # [rad/s]  # 最大角速度s
         self.max_accel = 0.8  # [m/ss]  # 最大加速度
-        self.max_dyawrate = 900.0 * math.pi / 180.0  # [rad/ss]  # 最大角加速度
+        self.max_dyawrate = 600.0 * math.pi / 180.0  # [rad/ss]  # 最大角加速度
         self.v_reso = 0.25  # [m/s]，速度分辨率
         self.yawrate_reso = 1.2 * math.pi / 180.0  # [rad/s]，角速度分辨率
         self.dt = 0.1  # [s]  # 采样周期
