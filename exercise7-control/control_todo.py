@@ -4,6 +4,7 @@
 import signal
 import time
 import sys
+import math
 
 import numpy as np
 
@@ -28,10 +29,10 @@ class Control(object):
         self.cmd = Control_Command()
         self.trajectory = Trajectory()
         self.node.create_reader("/chassis", Chassis, self.chassiscallback)
-        self.node.create_reader("/control_Reference/",
+        self.node.create_reader("/control_reference",
                                 Control_Reference, self.speedrefcallback)
         self.node.create_reader(
-            "/perception/road_mean_point", Trajectory, self.trajectorycallback)
+            "/planning/dwa_trajectory", Trajectory, self.trajectorycallback)
         self.writer = self.node.create_writer("/control", Control_Command)
 
         signal.signal(signal.SIGINT, self.sigint_handler)
@@ -49,7 +50,6 @@ class Control(object):
                     self.is_sigint_up = False
                     return
             except Exception:
-
                 break
 
     def chassiscallback(self, data):
@@ -65,10 +65,10 @@ class Control(object):
 
     def trajectorycallback(self, data):
         self.trajectory = data
-        number = len(Trajectory.point)
+        number = len(data.point)
         if (number > 0):
-            self.lateral_error = sqrt(Trajectory.point[0].x * Trajectory.point[0].x +
-                                      Trajectory.point[0].y * Trajectory.point[0].y) * Trajectory.point[0].x / abs(Trajectory.point[0].x)
+            self.lateral_error = math.sqrt(data.point[0].x * data.point[0].x +
+                                      data.point[0].y * data.point[0].y) * data.point[0].x / abs(data.point[0].x)
 
     def lateral_controller(self, trajectory, lateral_error):
         # TODO  you should calculate steerangle here
