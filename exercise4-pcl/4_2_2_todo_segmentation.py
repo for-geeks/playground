@@ -29,7 +29,7 @@ def main():
     cloud_filtered = stat_filter.filter()
     print('point size after statistical_outlier_filter: ' + str(cloud_filtered.size))
 
-    # TODO 1 ROI Filter
+    #default ROI Filter
     points = []
     for i in range(cloud_filtered.size):
         # Radius filter

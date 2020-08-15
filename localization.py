@@ -46,19 +46,14 @@ class Exercise(object):
         self.speed = Chassis.speed
 
     def posecallback(self, Pose):
+        q1 = Pose.rotation.x
+        q2 = Pose.rotation.y
+        q3 = Pose.rotation.z
+        q0 = Pose.rotation.w
         if self.init_flag == 1:
-            q1 = Pose.rotation.x
-            q2 = Pose.rotation.y
-            q3 = Pose.rotation.z
-            q0 = Pose.rotation.w
-            yaw = math.atan2((q1 * q2 - q0 * q3) * 2, q0 *
+            self.yaw = math.atan2((q1 * q2 - q0 * q3) * 2, q0 *
                              q0 + q1 * q1 - q2 * q2 - q3 * q3) - self.start_yaw
-            self.yaw = yaw
         else:
-            q1 = Pose.rotation.x
-            q2 = Pose.rotation.y
-            q3 = Pose.rotation.z
-            q0 = Pose.rotation.w
             self.start_yaw = math.atan2(
                 (q1 * q2 - q0 * q3) * 2, q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3)
             self.init_flag = 1

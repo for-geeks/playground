@@ -167,8 +167,8 @@ class Exercise(object):
     def calcu_loss_fun(self, x, maxTimes, alpha, datas):
         for i in range(maxTimes):
                 ret = self.slope_fx(x, datas)
-                x1 = x[0] - ret[0]*alpha;
-                x2 = x[1] - ret[1]*alpha;	
+                x1 = x[0] - ret[0]*alpha
+                x2 = x[1] - ret[1]*alpha
                 x = np.array([x1, x2])
         if self.loss_fun(x, datas) > 1000:
             return
