@@ -33,10 +33,10 @@ def main():
     points = []
     for i in range(cloud_filtered.size):
         # Radius filter
-        # r = math.sqrt(cloud_filtered[i][0]*cloud_filtered[i][0] + cloud_filtered[i][1]*cloud_filtered[i][1])
+        r = math.sqrt(cloud_filtered[i][0]*cloud_filtered[i][0] + cloud_filtered[i][1]*cloud_filtered[i][1])
         # ROI filter Passthrough filter
-        # if cloud_filtered[i][2] > -1.55 and cloud_filtered[i][2] < 2.5 and r < 10.0:
-            # points.append([cloud_filtered[i][0], cloud_filtered[i][1], cloud_filtered[i][2]])
+        if cloud_filtered[i][2] > -1.55 and cloud_filtered[i][2] < 2.5 and r < 10.0:
+            points.append([cloud_filtered[i][0], cloud_filtered[i][1], cloud_filtered[i][2]])
 
     cloud_input = pcl.PointCloud()
     cloud_input.from_list(points)
@@ -47,13 +47,13 @@ def main():
     # print('object_cloud size %s' % cloud_input.size)
     # print('plane_cloud size %s' % plane_cloud.size)
 
-    gray_visualizer(cloud_input)
+    # gray_visualizer(cloud_input)
     # gray_visualizer(plane_cloud)
 
     print("cloud_input points : " + str(cloud_input.size))
     # pcl.save(cloud_input, 'cloud_input'+str(time.time())+'.pcd')
 
-    # TODO 2 Adjust segment parameter 
+    # TODO Adjust segment parameter 
     cluster_indices = get_clusters(cloud_input, tolerance = 0.65, min_size = 30, max_size = 3500)
 
     print('cluster_indices : ' + str(len(cluster_indices)) + ' count.')
