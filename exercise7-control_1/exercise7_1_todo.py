@@ -24,8 +24,11 @@ class Control(object):
     def __init__(self, node):
         self.node = node
         self.speed = 0
+        self.error_last = 0
         self.target_speed = 0
         self.lateral_error = 0
+        self.error_sum = 0
+        self.d_error = 0
         self.cmd = Control_Command()
         self.trajectory = Trajectory()
         self.node.create_reader("/chassis", Chassis, self.chassiscallback)
@@ -77,6 +80,16 @@ class Control(object):
 
     def longitude_controller(self, target_speed, speed_now):
         # TODO  you should calculate throttle here
+        FF = 11
+        #print("contro loop")
+        offset = 1
+        Kp = 20
+        error = target_speed - speed_now
+        self.d_error = self.d_error * 0.7 + 0.3 * (error - self.error_last) / 0.05
+        self.error_last = self.error_last
+        self.error_sum = self.error_sum + 0.05 * error
+        Ki = 10
+        Kd = 1
         self.cmd.throttle = 0
         pass
 

@@ -11,7 +11,7 @@ from modules.control.proto.chassis_pb2 import Chassis
 from modules.localization.proto.localization_pb2 import localization
 from modules.localization.proto.localization_pb2 import pos
 from modules.control.proto.control_pb2 import Control_Command
-
+import random
 
 class Simulator(object):
     def __init__(self, node):
@@ -51,6 +51,7 @@ class Simulator(object):
         self.pos.x = 0.5
         self.pos.y = 2.4
         self.pos.z = 0
+        self.offset = random.random() * 3 + 4
         self.pos.yaw = self.yaw
 
         while True:
@@ -68,16 +69,19 @@ class Simulator(object):
         print("catched interrupt signal!")
 
     def controlcallback(self, control):
+        
         self.accelorator = control.throttle
-        if (control.throttle > 10):
-            self.accelorator = (control.throttle - 10) * 1
+        if (control.throttle > self.offset):
+            self.accelorator = (control.throttle) * 0.33 * 0.5 + self.accelorator * 0.5
         elif control.throttle > 0:
-            self.accelorator = 0
+            self.accelorator = self.accelorator * 0.5 
+            if self.velocity > 0.05:
+                self.accelorator = self.accelorator * 0.5 + 0.5 * control.throttle * 0.33 * (control.throttle / self.offset)
         elif control.throttle < 0:
-            self.accelorator = control.throttle * 1
+            self.accelorator = self.accelorator * 0.5 + 0.5 * control.throttle * 0.33
 
         dt = 0.05
-        self.velocity += (self.accelorator - 6 * self.velocity) * dt
+        self.velocity += (self.accelorator * 0.25 - 2 * self.velocity) * dt
         self.yaw += self.velocity * (control.steer_angle * 2 *
                                      3.14159265358979 / 180) * dt
         self.x_now -= self.velocity * math.cos(self.yaw) * dt
