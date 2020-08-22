@@ -47,10 +47,11 @@ def main():
     # print('object_cloud size %s' % cloud_input.size)
     # print('plane_cloud size %s' % plane_cloud.size)
 
-    gray_visualizer(cloud_input)
+    # remove visualizer when segmentation
+    # gray_visualizer(cloud_input)
     # gray_visualizer(plane_cloud)
 
-    print("cloud_input points : " + str(cloud_input.size))
+    print("points before sengmentation: " + str(cloud_input.size))
     # pcl.save(cloud_input, 'cloud_input'+str(time.time())+'.pcd')
     # exit(0)
 
