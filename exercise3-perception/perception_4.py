@@ -128,8 +128,7 @@ if __name__ == '__main__':
         temp_2 = np.dstack((merge_img, merge_img, merge_img)) * 255
 
         # get line
-        line_list, mean_x, mean_y = find_line_fit(
-            merge_img, midpoint=car_mid_point, nwindows=10, margin=100)
+        
 
         # size:
         col_weight_half = 100/2
