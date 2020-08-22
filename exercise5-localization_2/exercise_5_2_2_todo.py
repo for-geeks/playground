@@ -57,18 +57,15 @@ class Exercise(object):
         #print self.vel_head
             
         
-    # 定义函数f(x)
-     # 定义函数f(x)
     def problem(self, x, y, base_x, base_y, distance):
         '''
-	学员需要在此实现problem函数，使得能够计算给定xy时，单个方程的误差。
+	student need to fill problem function，to calculate error with a set of xy
 	'''
         return 0  
     
-    #定义损失函数
     def loss_fun(self, x, y, base_x, base_y, distances):
         '''
-        学员需要在此实现loss_fun函数, 此方程调用了problem函数，用于求解四个方程的误差之和
+        student need to fill loss_fun function，to calculate sum error
         '''
         return 0
 
@@ -77,12 +74,15 @@ class Exercise(object):
         d = 0.01;
         J1 = 0
         J2 = 0
+        '''
+        student need to fill this function，to calculate slope 
+        '''
         return [J1, J2]
     
     def calcu_loss_fun(self, x, y, maxTimes, alpha, base_x, base_y, distances):
         
         '''
-        学员需要在此实现calcu_loss_fun函数, 完成maxtimes次迭代。
+        student need to fill this function，to calculate x y with iteration 
         '''
         
         self.pos.x = x

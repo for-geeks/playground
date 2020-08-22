@@ -64,16 +64,16 @@ class Exercise5_2(object):
     def chassiscallback(self, chassis):
         velocity = chassis.speed
         steer_angle = self.offset + chassis.steer_angle * 3.14 / 180
-	delta_t = 0.05;
-	'''
-	学员需要修改这部分代码，求出self.theta, self.x_pos, self.y_pos
+        delta_t = 0.05;
+        '''
+        student need to modify this function，calculate self.theta, self.x_pos, self.y_pos
         delta_theta = 0 
         self.theta += 0        
         delta_x = 0
         delta_y = 0
         self.x_pos += 0
         self.y_pos += 0
-	'''
+        '''
 
         self.pos.x = self.x_pos
         self.pos.y = self.y_pos
