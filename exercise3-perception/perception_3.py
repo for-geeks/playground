@@ -3,8 +3,8 @@
 import cv2
 import numpy as np
 import time
-from preception_1 import color_mask
-from preception_2 import abs_sobel_thresh
+from perception_1 import color_mask
+from perception_2 import abs_sobel_thresh
 
 # roll
 src_corners = [[274, 250], [438, 252], [250, 339], [502, 341]]
