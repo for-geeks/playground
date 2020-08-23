@@ -56,23 +56,28 @@ class Exercise5_2(object):
 
     def gyrocallback(self, gyro):
         self.gyroz = -gyro.gyro.z * 1.0 - 0.01
-        self.theta += 0.02 * self.gyroz
+        delta_t = 0.02
+        '''
+        student need to add code here
+        self.theta = ?
+        '''
+        
 
     def commandcallback(self, command):
         self.steer = command.steer_angle * 3.14 / 180
 
     def chassiscallback(self, chassis):
         velocity = chassis.speed
-        #steer_angle = self.offset + chassis.steer_angle * 3.14 / 180
-        #print(steer_angle) 
-        #delta_theta = self.gyroz 
-        #self.theta += 0.05 * delta_theta
+        '''
+        student need to add code here
+        '''
         
-        delta_x = velocity * math.cos(self.theta)
-        delta_y = velocity * math.sin(self.theta)
+        delta_x = 0
+        delta_y = 0
         
-        self.x_pos += 0.05 * delta_x
-        self.y_pos += 0.05 * delta_y
+        self.x_pos += 0
+        self.y_pos += 0
+
         self.pos.x = self.x_pos
         self.pos.y = self.y_pos
         self.pos.z = 0

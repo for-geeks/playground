@@ -2,9 +2,9 @@
 
 import cv2
 import numpy as np
-from preception_1 import color_mask
-from preception_2 import abs_sobel_thresh
-from preception_3 import merge_mask
+from perception_1 import color_mask
+from perception_2 import abs_sobel_thresh
+from perception_3 import merge_mask
 
 # roll
 src_corners = [[274, 250], [438, 252], [250, 339], [502, 341]]
@@ -128,8 +128,7 @@ if __name__ == '__main__':
         temp_2 = np.dstack((merge_img, merge_img, merge_img)) * 255
 
         # get line
-        line_list, mean_x, mean_y = find_line_fit(
-            merge_img, midpoint=car_mid_point, nwindows=10, margin=100)
+        
 
         # size:
         col_weight_half = 100/2

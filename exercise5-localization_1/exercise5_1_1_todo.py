@@ -4,7 +4,7 @@ import sys
 import math
 import time
 import signal
-import cv2
+#import cv2
 import threading
 import numpy as np
 import matplotlib
@@ -33,7 +33,7 @@ def on_key_press(event):
             global u
             u = u + 0.1
         else:
-            global u
+            #global u
             u = u - 0.1
 
 def simple_plot(delta_t):   
