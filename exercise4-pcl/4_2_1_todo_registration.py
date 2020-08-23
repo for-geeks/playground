@@ -33,7 +33,7 @@ def main():
 
     # TODO align by icp 
     icp = cloud_in.make_IterativeClosestPoint()
-    converged, transf, estimate, fitness = icp.icp(cloud_in, cloud_out, max_iter=50)
+    converged, transf, estimate, fitness = icp.icp(cloud_in, cloud_out, max_iter=?)
     print('has converged:' + str(converged) + ' score: ' + str(fitness))
     print(str(transf))
 

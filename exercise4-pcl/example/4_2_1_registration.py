@@ -6,8 +6,10 @@ import pcl.pcl_visualization
 import random
 import numpy as np
 
+# Inspired by 
+# https://pcl.readthedocs.io/projects/tutorials/en/latest/iterative_closest_point.html
+
 def main():
-    # cloud_in = pcl.PointCloud()
     cloud_in = pcl.load('/python-pcl/exercises/vehicle_in.pcd')
     print("cloud points : " + str(cloud_in.size))
     
@@ -16,6 +18,7 @@ def main():
 
     print('size:' + str(points_out.size))
     for i in range(0, cloud_in.size):
+        # why not have try with Random disturbance?
         points_out[i][0] = cloud_in[i][0] + 1.7
         points_out[i][1] = cloud_in[i][1]
         points_out[i][2] = cloud_in[i][2]
@@ -37,6 +40,8 @@ def main():
     print(str(transf))
 
     # Tranform by transf
+    # 数组的运算是元素级的，数组相乘的结果是各对应元素的积组成的数组，
+    # 而对于矩阵而言，需要求的是点积，这里NumPy库提供了用于矩阵乘法的dot函数。
     transformed_points = np.dot(cloud_in, transf[0:3, 0:3])
     transformed_pc = pcl.PointCloud()
     transformed_pc.from_array(transformed_points)
@@ -56,9 +61,9 @@ def main():
     viewer.AddPointCloud_ColorHandler(cloud_in, pccolor_in, "cloud_in")
     viewer.AddPointCloud_ColorHandler(cloud_out, pccolor_out, "cloud_out")
     viewer.AddPointCloud_ColorHandler(transformed_pc, pccolor_transformed, "transformed_cloud")
+    # viewer.AddPointCloud_ColorHandler(estimate, pccolor_transformed, "transformed_cloud")
 
     while not(viewer.WasStopped()):
-        #viewer.updatePointCloud(cloud_out, pccolor_out, "cloud_out_v2")
         viewer.SpinOnce()
 
 
