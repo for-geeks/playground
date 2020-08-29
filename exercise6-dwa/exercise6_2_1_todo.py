@@ -1,0 +1,230 @@
+import math
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+
+class Config(object):
+    """
+    用来仿真的参数，
+    """
+
+    def __init__(self):
+        # robot parameter
+        self.max_speed = 0.3  # [m/s]  # 最大速度
+        #self.min_speed = 0  # [m/s]  # 最小速度，设置为可以倒车
+        self.min_speed = 0.1  # [m/s]  # 最小速度，设置为不倒车
+        self.max_yawrate = 120.0 * math.pi / 180.0  # [rad/s]  # 最大角速度
+        self.max_accel = 0.8  # [m/ss]  # 最大加速度
+        self.max_dyawrate = 120.0 * math.pi / 180.0  # [rad/ss]  # 最大角加速度
+        self.v_reso = 0.03  # [m/s]，速度分辨率
+        self.yawrate_reso = 1 * math.pi / 180.0  # [rad/s]，角速度分辨率
+        self.dt = 0.1  # [s]  # 采样周期
+        self.predict_time = 5  # [s]  # 向前预估三秒
+        self.to_goal_cost_gain = 10 # 目标代价增益
+        self.speed_cost_gain = 10  # 速度代价增益
+        self.obstacle_cost_gain = 10
+        self.robot_radius = 0.1  # [m]  # 机器人半径
+
+def motion(x, u, dt):
+    '''
+    update x with motion model
+    '''
+    x[0] += 0  # = ??? x position
+    x[1] += 0  # = ??? y position
+    x[2] += 0  # = ??? heading
+    x[3] = u[0]  # speed
+    x[4] = u[1]  # omega
+
+    return x
+
+def calc_dynamic_window(x, config):
+
+    vmin = 0
+    vmax = 1
+    wmin = -0.5
+    wmin = 0.5
+
+    '''
+    according to config, calculate vr , which is the range of v and w.
+    '''
+    vr = [vmin, vmax, wmin, wmax]
+
+    return vr
+
+
+def calc_trajectory(x_init, v, w, config):
+    """
+    预测x秒内的轨迹
+    """
+    x = np.array(x_init)
+    trajectory = np.array(x)
+    time = 0
+    while time <= config.predict_time:
+        x = motion(x, [v, w], config.dt)
+        trajectory = np.vstack((trajectory, x))  # 垂直堆叠，vertical
+        time += config.dt
+
+    return trajectory
+
+
+def calc_to_goal_cost(trajectory, goal, config):
+    """
+    计算轨迹到目标点的代价
+    """
+    # calc to goal cost. It is 2D norm.
+
+    dx = goal[0] - trajectory[-1, 0]
+    dy = goal[1] - trajectory[-1, 1]
+    goal_dis = math.sqrt(dx ** 2 + dy ** 2)
+    cost = config.to_goal_cost_gain * goal_dis
+    #error_angle = math.atan2(dy, dx)
+    #cost = abs(error_angle - trajectory[-1, 2])
+
+    return cost
+
+
+def calc_obstacle_cost(traj, ob, config):
+    """
+    计算预测轨迹和障碍物的最小距离，dist(v,w)
+    """
+
+    skip_n = 2  # for speed up
+    minr = float("inf")
+
+    for ii in range(0, len(traj[:, 1]), skip_n):
+        for i in range(len(ob[:, 0])):
+            ox = ob[i, 0]
+            oy = ob[i, 1]
+            dx = traj[ii, 0] - ox
+            dy = traj[ii, 1] - oy
+
+            r = math.sqrt(dx ** 2 + dy ** 2)
+            if r <= config.robot_radius:
+                return float("Inf")  # collision
+
+            if minr >= r:
+                minr = r
+
+    return 1.0 / minr  # OK
+
+
+def calc_final_input(x, u, vr, config, goal, ob):
+    """
+    计算采样空间的评价函数，选择最合适的那一个作为最终输入
+    """
+    x_init = x[:]
+    min_cost = 10000.0
+    min_u = u
+    v = 0.5
+
+    best_trajectory = np.array([x])
+
+    # evaluate all trajectory with sampled input in dynamic window
+    # v,生成一系列速度，w，生成一系列角速度
+
+    for v in np.arange(vr[0], vr[1], config.v_reso):
+        for w in np.arange(vr[2], vr[3], config.yawrate_reso):
+
+            trajectory = calc_trajectory(x_init, v, w, config)
+
+            # calc cost
+            to_goal_cost = config.to_goal_cost_gain * calc_to_goal_cost(trajectory, goal, config)
+            speed_cost = config.speed_cost_gain * (config.max_speed - trajectory[-1, 3])
+            ob_cost = config.obstacle_cost_gain * calc_obstacle_cost(trajectory, ob, config)
+
+            # 评价函数多种多样，看自己选择
+            final_cost = to_goal_cost + speed_cost + ob_cost
+
+            #print(to_goal_cost, speed_cost, ob_cost)
+
+            # search minimum trajectory
+            if min_cost >= final_cost:
+                min_cost = final_cost
+                min_u = [v, w]
+                best_trajectory = trajectory
+
+    return min_u, best_trajectory
+
+
+def dwa_control(x, u, config, goal, ob):
+    """
+    调用前面的几个函数，生成最合适的速度空间和轨迹搜索空间
+    """
+    # Dynamic Window control
+
+    vr = calc_dynamic_window(x, config)
+
+    u, trajectory = calc_final_input(x, u, vr, config, goal, ob)
+
+    return u, trajectory
+
+
+def plot_arrow(x, y, yaw, length=0.5, width=0.01):
+    """
+    arrow函数绘制箭头
+    """
+    plt.arrow(x, y, length * math.cos(yaw), length * math.sin(yaw),
+              head_length=0.15 * width, head_width=width)
+    plt.plot(x, y)
+
+
+def main():
+    """
+    主函数
+    :return:
+    """
+    # print(__file__ + " start!!")
+    # 初始化位置空间
+    x = np.array([0.0, 0.0, math.pi / 2.0, 0.2, 0.0])
+
+    goal = np.array([0, 1])
+
+    ob = np.matrix([[0, 0.5]])
+    u = np.array([0.3, 0.0])
+    config = Config()
+    trajectory = np.array(x)
+
+    num = 0
+
+    time_start = time.time()
+
+    #u, best_trajectory = dwa_control(x, u, config, goal, ob)
+
+    vr = calc_dynamic_window(x, config)
+    trajs = []
+    for v in np.arange(vr[0], vr[1], config.v_reso):
+        for w in np.arange(vr[2], vr[3], config.yawrate_reso):
+            print([v, w])
+            trajs.append(calc_trajectory(x, v, w, config))
+
+    
+    time_end = time.time()
+
+    print('time:', time_end - time_start)
+    print(trajectory)
+
+    print("Done", num)
+
+    draw_path(trajs, goal, ob, x)
+
+def draw_path(trajectorys, goal, ob, x):
+    """
+    画图函数
+    """
+    
+    plt.cla()  # 清除上次绘制图像
+    
+    for trajectory in trajectorys:
+        plt.plot(0, 0, "og")
+        #plot_arrow(x[0], x[1], x[2])
+        plt.axis("equal")
+        plt.grid(True)
+        plt.plot(trajectory[:, 0], trajectory[:, 1], 'r-')
+    plt.plot(goal[0], goal[1], "ro")
+    plt.plot(ob[:, 0], ob[:, 1], "bs")
+    plt.plot(x[0], x[1], "xr")
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()
