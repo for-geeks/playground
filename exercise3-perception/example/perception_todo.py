@@ -3,9 +3,9 @@ import sys
 
 import cv2
 import numpy as np
-from preception_1 import color_mask
-from preception_2 import abs_sobel_thresh
-from preception_3 import merge_mask
+from perception_1 import color_mask
+from perception_2 import abs_sobel_thresh
+from perception_3 import merge_mask
 
 from cyber_py3 import cyber
 

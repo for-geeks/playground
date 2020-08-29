@@ -17,15 +17,15 @@ def main():
 
     # TODO 1 Voxel grid filter
     vg = cloud_filtered.make_voxel_grid_filter()
-    LEAF_SIZE = 0.09
+    LEAF_SIZE = ?
     vg.set_leaf_size(LEAF_SIZE, LEAF_SIZE, LEAF_SIZE)
     cloud_filtered = vg.filter()
     print('point size after voxel_grid_filter: ' + str(cloud_filtered.size))
 
     # TODO 2 Statistical_outlier_filter
     stat_filter = cloud_filtered.make_statistical_outlier_filter()
-    stat_filter.set_mean_k(100)
-    stat_filter.set_std_dev_mul_thresh(2.0)
+    stat_filter.set_mean_k(?)
+    stat_filter.set_std_dev_mul_thresh(?)
     cloud_filtered = stat_filter.filter()
     print('point size after statistical_outlier_filter: ' + str(cloud_filtered.size))
 
@@ -33,16 +33,16 @@ def main():
     points = []
     # for i in range(cloud_filtered.size):
         # Radius filter
-        # r = math.sqrt(cloud_filtered[i][0]*cloud_filtered[i][0] + cloud_filtered[i][1]*cloud_filtered[i][1])
+        r = math.sqrt(cloud_filtered[i][0]*cloud_filtered[i][0] + cloud_filtered[i][1]*cloud_filtered[i][1])
         # ROI filter Passthrough filter
-        # if cloud_filtered[i][2] > -1.55 and cloud_filtered[i][2] < 2.5 and r < 10.0:
-            # points.append([cloud_filtered[i][0], cloud_filtered[i][1], cloud_filtered[i][2]])
+        if cloud_filtered[i][2] > ? and cloud_filtered[i][2] < ? and r < ?:
+            points.append([cloud_filtered[i][0], cloud_filtered[i][1], cloud_filtered[i][2]])
 
     cloud_input = pcl.PointCloud()
     cloud_input.from_list(points)
 
     # TODO 4 Ransac plane segmentation
-    # plane_cloud, cloud_input = do_ransac_plane_segmentation(cloud_input, max_distance = 0.01)
+    # plane_cloud, cloud_input = do_ransac_plane_segmentation(cloud_input, max_distance = ?)
 
     # print('object_cloud size %s' % cloud_input.size)
     # print('plane_cloud size %s' % plane_cloud.size)
