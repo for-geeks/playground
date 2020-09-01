@@ -206,7 +206,7 @@ class Exercise(object):
         # TODO I END
 
         self.planning_path = Trajectory()
-        #print("point size:",str(len(mean_y)))
+        print("point size:",str(len(mean_y)))
         if len(mean_y) > 0:
             mean_x_real, mean_y_real = translation_view(np.asarray(mean_x), np.asarray(mean_y))
 

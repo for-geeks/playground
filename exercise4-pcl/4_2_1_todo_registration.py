@@ -7,8 +7,7 @@ import random
 import numpy as np
 
 def main():
-    # cloud_in = pcl.PointCloud()
-    cloud_in = pcl.load('/python-pcl/exercises/vehicle_in.pcd')
+    cloud_in = pcl.load('/python-pcl/data/vehicle_in.pcd')
     print("cloud points : " + str(cloud_in.size))
     
     print('Saved ' + str(cloud_in.size) + ' data points to input')
