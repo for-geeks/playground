@@ -76,7 +76,8 @@ def main():
         b = int(cluster_color[j][2])
         pccolor = pcl.pcl_visualization.PointCloudColorHandleringCustom(
             cluster_cloud, r, g, b)
-        # pcl.save(cluster_cloud, str(j) + '.pcd')
+        # Save pcd data file to local
+        pcl.save(cluster_cloud, str(j) + '.pcd')
         viewer.AddPointCloud_ColorHandler(cluster_cloud, pccolor, 'cloud_cluster:' + str(j))
 
     v = True

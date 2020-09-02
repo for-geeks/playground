@@ -94,7 +94,8 @@ def main():
         b = int(cluster_color[j][2])
         cluster_pc_color = pcl.pcl_visualization.PointCloudColorHandleringCustom(
             cluster_cloud, r, g, b)
-        # pcl.save(cluster_cloud, str(j) + '.pcd')
+        # Save pcd data file to local
+        pcl.save(cluster_cloud, str(j) + '.pcd')
         viewer.AddPointCloud_ColorHandler(cluster_cloud, cluster_pc_color, 'cloud_cluster:' + str(j))
         # viewer.AddCube(min_x, max_x, min_y, max_y, min_z, max_z, 1.0, 1.0, 1.0, 'cloud_cluster:' + str(j))
         # viewer.AddLine(mass_center_point, z_axis, 0.0, 0.0, 1.0, "minor eigen vector")
