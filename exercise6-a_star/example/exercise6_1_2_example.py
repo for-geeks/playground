@@ -82,10 +82,6 @@ class planning(object):
 
     def start(self, start_x, start_y, goal_x, goal_y):
 
-        #if not os.path.exists('global.txt'):
-        #    f = open("global.txt", 'w')
-        #    f.close()
-
         plan_path = []
         maps_size = np.array(maps)  # 获取图像行和列大小
         height = maps_size.shape[0]  # 行数->y
@@ -125,12 +121,21 @@ class planning(object):
         while 1:
             s_point = closelist[-1]['position']  # 获取close列表最后一个点位置，S点
 
+            #构建小车运动模型
+            #TODO
+            # 可能运动的四个方向增量
+            add = ([0, step_size], [0, -step_size], [step_size, 0],
+                   [-step_size, 0])
+            #TODO
+
+            '''
+            # 可能运动的八个方向增量
             add = ([0, step_size], [0, -step_size], [step_size, 0],
                    [-step_size, 0], [-step_size,
                                      step_size], [step_size, -step_size],
                    [step_size, step_size], [-step_size,
-                                            -step_size])  # 可能运动的四个方向增量
-
+                                            -step_size])  
+            '''
             add_scan = ([0, step_size_scan], [0, -step_size_scan],
                         [step_size_scan,
                          0], [-step_size_scan,
@@ -177,11 +182,24 @@ class planning(object):
 
                 #完成代价g(n)和h(n)的构建
                 #TODO
+                #欧几里得距离
                 G = ((x - start['position'][0])**2 + (y - start['position'][1])**2)**0.5  # 计算代价G
                 H = ((x - end['position'][0])**2 + (y - end['position'][1])**2)**0.5  # 计算代价H
-		#TODO
+                # TODO
 
-		#代价I,约束规划路线贴近道路中心线
+                '''
+		        #切比雪夫距离
+		        G = max(abs(x - start['position'][0]), abs(y - start['position'][1]))  # 计算代价G
+                H = max(abs(x - end['position'][0]), abs(y - end['position'][1]))  # 计算代价H
+		        '''
+
+                '''
+                #曼哈顿距离
+                G = abs(x - start['position'][0]) + abs(y - start['position'][1])  # 计算代价G
+                H = abs(x - end['position'][0]) + abs(y - end['position'][1])  # 计算代价H
+		        '''
+
+		        #代价I,约束规划路线贴近道路中心线
                 I = abs(x - lane_point[0]) + abs(y - lane_point[1])
 
                 if (maps[y, x] >= 120 and maps[y, x] <= 140) or (
@@ -251,10 +269,6 @@ class planning(object):
         time_end = time.time()
 
         print('totally cost', time_end - time_start)
-
-        #f = open('global.txt', 'w')
-        #f.write(str(plan_path))
-        #f.close()
 
         return plan_path
 
