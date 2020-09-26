@@ -1,15 +1,13 @@
-#!/usr/bin/env python
-import os
-import sys
+# coding:utf-8
 
 import cv2
 import numpy as np
-
-from cyber_py3 import cyber
-
+import os
 from modules.sensors.proto.sensor_image_pb2 import Image
 from modules.planning.proto.planning_pb2 import Trajectory
 from modules.planning.proto.planning_pb2 import Point
+from cyber_py import cyber
+import sys
 
 sys.path.append("../")
 
@@ -23,7 +21,6 @@ M = cv2.getPerspectiveTransform(np.float32(src_corners), np.float32(dst_corners)
 
 car_mid_point = 228
 
-
 def perspective_transform(image, m, img_size=None):
     if img_size is None:
         img_size = (image.shape[1], image.shape[0])
@@ -31,23 +28,22 @@ def perspective_transform(image, m, img_size=None):
     return warped
 
 
-def color_mask(hsv, low, high):
+def color_mask(hsv,low,high):
     # Return mask from HSV
     mask = cv2.inRange(hsv, low, high)
     return mask
 
 
 def apply_yellow_white_mask(img):
-    gradx = abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(20, 255))
+    gradx = abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(80, 180))
     # TODO h
-    image_HSV = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    yellow_hsv_low = np.array([0,  100,  100])
-    yellow_hsv_high = np.array([149, 255, 255])
-    mask_yellow = color_mask(image_HSV, yellow_hsv_low, yellow_hsv_high)
-
+    image_HSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    yellow_hsv_low  = np.array([10,  43,  47])
+    yellow_hsv_high = np.array([ 34, 255, 255])
+    mask_yellow = color_mask(image_HSV,yellow_hsv_low,yellow_hsv_high)
     mask_yellow[(mask_yellow != 0)] = 1
     combined_lsx = np.zeros_like(gradx)
-    combined_lsx[((gradx == 1) | (mask_yellow == 1))] = 1
+    combined_lsx[((gradx == 1) & (mask_yellow == 1))] = 1
     return mask_yellow
 
 
@@ -74,7 +70,7 @@ def get_win_point(leftx, lefty, shape):
                     left_x_0 = leftx[i_y]
                     break
 
-        if left_x_0 == -1:
+        if left_x_0 == -1 :
             tag_y -= 1
             get_polt_tag += 1
             continue
@@ -102,9 +98,9 @@ def get_win_point(leftx, lefty, shape):
     return left_x_re
 
 
-def abs_sobel_thresh(new_image, sobel_kernel=3, orient='x', thresh=(0, 255)):
+def abs_sobel_thresh(image, sobel_kernel=3, orient='x', thresh=(0, 255)):
     # TODO f
-    gray = cv2.cvtColor(new_image, cv2.COLOR_RGB2GRAY)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # INFO g
     if orient == 'x':
@@ -120,8 +116,8 @@ def abs_sobel_thresh(new_image, sobel_kernel=3, orient='x', thresh=(0, 255)):
 
 
 def translation_view(x, y):
-    x_r = 125.3 - 0.003918 * x - 0.1418 * y
-    y_r = 48.78 - 0.1446 * x - y * 0.008061
+    x_r = 125.3 - 0.003918 * x  - 0.1418 * y
+    y_r = 48.78 - 0.1446 * x  - y * 0.008061
     return x_r, y_r
 
 
@@ -196,16 +192,15 @@ class Exercise(object):
     def getmeanpoint(self, data):
 
         # TODO e
-        new_image = np.frombuffer(data.data, dtype=np.uint8)
-        new_image = cv2.imdecode(new_image, cv2.IMREAD_COLOR)
+        image = np.frombuffer(data.data, dtype=np.uint8)
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-        wrap_img = perspective_transform(new_image, M, (580, 560))
+        wrap_img = perspective_transform(image, M, (580, 560))
 
         yellow_line = apply_yellow_white_mask(wrap_img)
 
         # TODO I
-        line_list, mean_x, mean_y = find_line_fit(
-            yellow_line, midpoint=car_mid_point, nwindows=10, margin=100)
+        line_list, mean_x, mean_y = find_line_fit(yellow_line, midpoint=car_mid_point, nwindows=10, margin=100)
 
         self.planning_path = Trajectory()
         #print("point size:",str(len(mean_y)))

@@ -21,8 +21,8 @@ class Exercise(object):
         self.maxTimes = 100
         self.x = np.array([0.725, 0.7])
         # base station matrix
-        self.base_x = np.array([3.3, 3.3, 5.5, 5.5])
-        self.base_y = np.array([1.1, 3.38, 1.1, 3.38])
+        self.base_x = np.array([0.0, 0.0, 6.0, 6.0])
+        self.base_y = np.array([0.0, 3.0, 0.0, 3.0])
 
         self.xi = np.array([])
         self.yi = np.array([])
