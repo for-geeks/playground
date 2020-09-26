@@ -194,6 +194,13 @@ class Exercise(object):
         # TODO e
         image = np.frombuffer(data.data, dtype=np.uint8)
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        #image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
+
+        image = cv2.erode(image, kernel)
+
+        image = cv2.blur(image, (5,5))
 
         wrap_img = perspective_transform(image, M, (580, 560))
 
