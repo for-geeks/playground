@@ -38,8 +38,8 @@ def apply_yellow_white_mask(img):
     gradx = abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(80, 180))
     # TODO h
     image_HSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-    yellow_hsv_low  = np.array([10,  43,  47])
-    yellow_hsv_high = np.array([ 34, 255, 255])
+    yellow_hsv_low  = np.array([12,  80,  60])
+    yellow_hsv_high = np.array([ 24, 255, 255])
     mask_yellow = color_mask(image_HSV,yellow_hsv_low,yellow_hsv_high)
     mask_yellow[(mask_yellow != 0)] = 1
     combined_lsx = np.zeros_like(gradx)
