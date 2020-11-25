@@ -1,3 +1,4 @@
+#coding: utf-8
 """
 Frenet optimal trajectory generator
 author: Atsushi Sakai (@Atsushi_twi)
@@ -17,21 +18,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import cubic_spline_planner
-from quartic_polynomail import QuarticPolynomial
+from quartic_polynomial import QuarticPolynomial
 from quintic_polynomials_planner import QuinticPolynomial
 
 SIM_LOOP = 500
 
 # Parameter
-MAX_SPEED = 50.0 / 3.6  # maximum speed [m/s]
+MAX_SPEED = 30.0 / 3.6  # maximum speed [m/s]
 MAX_ACCEL = 2.0  # maximum acceleration [m/ss]
 MAX_CURVATURE = 1.0  # maximum curvature [1/m]
-MAX_ROAD_WIDTH = 7.0  # maximum road width [m]
-D_ROAD_W = 1.0  # road width sampling length [m]
+MAX_ROAD_WIDTH = 1.5  # maximum road width [m]
+D_ROAD_W = 0.20  # road width sampling length [m]
 DT = 0.2  # time tick [s]
 MAX_T = 5.0  # max prediction time [m]
 MIN_T = 4.0  # min prediction time [m]
-TARGET_SPEED = 30.0 / 3.6  # target speed [m/s]
+TARGET_SPEED = 10.0 / 3.6  # target speed [m/s]
 D_T_S = 5.0 / 3.6  # target speed sampling length [m/s]
 N_S_SAMPLE = 1  # sampling number of target speed
 ROBOT_RADIUS = 2.0  # robot radius [m]
@@ -211,14 +212,14 @@ def generate_target_course(x, y):
 def main():
     print(__file__ + " start!!")
 
-    # way points
+    # way points from global trajetory
     wx = [0.0, 10.0, 20.5, 35.0, 70.5]
     wy = [0.0, -6.0, 5.0, 6.5, 0.0]
     # obstacle lists
     ob = np.array([[20.0, 10.0],
                    [30.0, 6.0],
-                   [30.0, 8.0],
-                   [35.0, 8.0],
+                #    [30.0, 8.0],
+                #    [35.0, 8.0],
                    [50.0, 3.0]
                    ])
 
@@ -259,9 +260,9 @@ def main():
             plt.plot(path.x[1], path.y[1], "vc")
             plt.xlim(path.x[1] - area, path.x[1] + area)
             plt.ylim(path.y[1] - area, path.y[1] + area)
-            plt.title("v[km/h]:" + str(c_speed * 3.6)[0:4])
+            plt.title("v[m/s]:" + str(c_speed)[0:4])
             plt.grid(True)
-            plt.pause(0.0001)
+            plt.pause(0.001)
 
     print("Finish")
     if show_animation:  # pragma: no cover
